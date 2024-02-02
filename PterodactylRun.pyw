@@ -54,9 +54,9 @@ class dataHandler:
             print(errs[5])
             sleep(2)
             sys.exit()
-        fps = conf['CONFIG']['fps']
-        saveScores = conf['CONFIG']['saveScores']
-        self.saveDir = conf['CONFIG']['saveDir']
+        fps = conf["CONFIG"]["fps"]
+        saveScores = conf["CONFIG"]["saveScores"]
+        self.saveDir = conf["CONFIG"]["saveDir"]
         return int(fps), saveScores
 
     def getJSON(self):
