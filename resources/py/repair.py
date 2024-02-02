@@ -19,22 +19,22 @@ if OS == "Windows":
 else:
     cl = "clear"
 
-moduleDict = {
-    1: "os",
-    2: "sys",
-    3: "time",
-    4: "json",
-    5: "pygame",
-    6: "random",
-    7: "platform",
-    8: "requests",
-    9: "threading",
-    10: "configparser"
-}
+moduleList = [
+    "os",
+    "sys",
+    "time",
+    "json",
+    "pygame",
+    "random",
+    "platform",
+    "requests",
+    "threading",
+    "configparser"
+]
 
 urlDict = {
-    "ini": "https://github.com/Kieferrrrr/PterodactylRun/resources/config.ini",
-    "json": "https://github.com/Kieferrrrr/PterodactylRun/resources/json/scores.jsonc"
+    "ini": "https://github.com/Kieferrrrr/PterodactylRun/resources/etc/config.ini",
+    "json": "https://github.com/Kieferrrrr/PterodactylRun/resources/etc/scores.json"
 }
 
 
@@ -49,7 +49,7 @@ class repair:
 
         if choice == 1:
             print("\n Installing all modules with pip\n")
-            for i in moduleDict:
+            for i in moduleList:
                 os.system(f"pip install {i}")
             print("\n All modules should now be installed")
             time.sleep(2)
