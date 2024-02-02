@@ -95,7 +95,7 @@ class pterodactyl(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() # getting the x, y, width, height
         self.rect.center = (vw // 4, vh // 2) # Set the center to 1/4 of the screen width and 1/2 of the screen height
         # Integers
-        self.gravity = 0.5
+        self.gravity = 0.3
         self.flySpeed = 5
         self.Yspeed = 0
         # Menu Animation
@@ -143,6 +143,7 @@ class main:
         self.clock = pygame.time.Clock()
         # Assets
         self.backImg = pygame.image.load("resources/img/700x175.png")
+        self.trexIco = pygame.image.load("resources/img/trexSmall.png")
         self.textBig = pygame.font.Font("resources/etc/GameOver.ttf", 75)
         self.textSmall = pygame.font.Font("resources/etc/GameOver.ttf", 48)
         # Integers
@@ -193,7 +194,8 @@ class main:
             self.screenCTRL.blit(txtA, (vw / 3, 0))
             self.screenCTRL.blit(txtB, (vw - 120, 12))
             self.screenCTRL.blit(txtC, (vw - 225, 12))
-            self.screenCTRL.blit(txtD, (50, 12))
+            self.screenCTRL.blit(txtD, (60, 12))
+            self.screenCTRL.blit(self.trexIco, (10, 2.5))
             self.allSprites.update()
             self.allSprites.draw(self.screenCTRL)
             pygame.display.flip()
