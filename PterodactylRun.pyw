@@ -133,7 +133,7 @@ class main:
         # config.ini and scores.json
         self.dataParsing = dataHandler()
         self.fps, self.savescores = self.dataParsing.getINI()
-        self.highscore, self.lastscore = self.dataPasing.getJSON()
+        self.highscore, self.lastscore = self.dataParsing.getJSON()
         # Sprites
         self.allSprites = pygame.sprite.Group()
         self.player = pterodactyl()
@@ -142,12 +142,12 @@ class main:
         self.screenCTRL = pygame.display.set_mode((vw, vh))
         self.clock = pygame.time.Clock()
         # Assets
-        self.backImg = pygame.image.load("resources/img/700x150.png")
-        self.textBig = pygame.font.Font("resoruces/etc/GameOver.ttf", 75)
-        self.textSmall = pygame.font.Font("resoruces/etc/GameOver.ttf", 48)
+        self.backImg = pygame.image.load("resources/img/700x175.png")
+        self.textBig = pygame.font.Font("resources/etc/GameOver.ttf", 75)
+        self.textSmall = pygame.font.Font("resources/etc/GameOver.ttf", 48)
         # Integers
         self.score = 00000
-        self.kils = 00000
+        self.kills = 00000
         self.img1X = 0
         self.img2X = 700
         self.bothImgY = 275
@@ -180,6 +180,11 @@ class main:
             if img2X > 350:
                 img2X = 350
 
+            if self.player.gravityOn == False:
+                txtG = self.textBig.render("Press [SPACE] to Start", True, "#454545")
+                self.screenCTRL.blit(txtG, (vw / 3.6, 50))
+
+
             txtA = self.textBig.render("PterodactylRun", True, "#454545")
             txtB = self.textSmall.render("Score {:05d}".format(self.score), True, "#454545")
             txtC = self.textSmall.render(f"High {self.highscore}", True, "#454545")
@@ -189,8 +194,8 @@ class main:
             self.screenCTRL.blit(txtB, (vw - 120, 12))
             self.screenCTRL.blit(txtC, (vw - 225, 12))
             self.screenCTRL.blit(txtD, (50, 12))
-            self.sprites.update()
-            self.sprites.draw(self.screenCTRL)
+            self.allSprites.update()
+            self.allSprites.draw(self.screenCTRL)
             pygame.display.flip()
             self.clock.tick(self.fps)
 
@@ -199,12 +204,12 @@ class main:
 
     def die(self):
         if self.savescores == True:
-            dataHandler.writeJSON(self.score)
+            self.dataParsing.writeJSON(self.score)
         elif self.savescores == False:
             print
         else:
             print(f"{errs[9]}\n     Saving score as a default") # popup window errs[] maybe
-            dataHandler.writeJSON(self.score)
+            self.dataParsing.writeJSON(self.score)
 
     # Broad spectrum error handling
     def errMsgGeneric(err):
