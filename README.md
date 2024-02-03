@@ -12,16 +12,16 @@ When a T-Rex appears you have to fly close to the ground and hit it, hitting a T
 avoid is worth 1 point. Each time you go over 250 points you progress to the next level which increases the speed of the game.
 
 ### Clone and Install
-'''bash
+```shell
 git clone https://github.com/Kieferrrrr/PterodactylRun
 cd PterodactylRun
 py install-repair.py
-'''
+```
 
 ### Running
-'''bash
+```shell
 py PterodactylRun.py
-'''
+```
 
 ## install-repair.py
 PterodactylRun comes with a python file called "install-repair.py", this file is for installing the required modules that Python3 installs
