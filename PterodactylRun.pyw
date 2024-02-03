@@ -118,13 +118,37 @@ class pterodactyl(pygame.sprite.Sprite):
         self.Yspeed = -self.flySpeed
         self.image = self.flyingImg
 
-
+# Class for all functions and variables related to the cacti and T-Rex
 class hazards:
     def __init__(self):
         # Assets
         self.trexA = pygame.image.load("resources/img/trexA.png")
         self.trexB = pygame.image.load("resources/img/trexB.png")
         self.trexC = pygame.image.load("resources/img/trexB.png")
+        self.cactusA = pygame.image.load("resources/img/cactusA.png")
+        self.cactusB = pygame.image.load("resources/img/cactusB.png")
+        self.cactusC = pygame.image.load("resources/img/cactusC.png")
+        # Values from main
+        self.getMain = main()
+        self.getMain.scrollSpeed
+        # Integers
+        self.rollCounter = 0
+
+    def rng(self):
+        if self.rollCounter >= 20:
+            self.rollCounter = 0
+
+        self.rollCounter = self.rollCounter + 1
+
+    def cactus(self):
+        print
+
+    # Weak algorithm for T-Rex controls
+    def trex(self):
+        print
+
+    def hitDetection(self):
+        print
 
 
 # Class for the main game loop
@@ -152,6 +176,7 @@ class main:
         self.img1X = 0
         self.img2X = 700
         self.bothImgY = 275
+        self.scrollSpeed = 1
 
     def play(self):
         running = True
@@ -167,8 +192,8 @@ class main:
                         self.player.gravityOn = True
                         break
 
-            img1X = img1X - 1
-            img2X = img2X - 1
+            img1X = img1X - self.scrollSpeed
+            img2X = img2X - self.scrollSpeed
             self.screenCTRL.fill((255,255,255))
             self.screenCTRL.blit(self.backImg, (img1X, self.bothImgY))
             self.screenCTRL.blit(self.backImg, (img2X, self.bothImgY))
@@ -190,11 +215,13 @@ class main:
             txtB = self.textSmall.render("Score {:05d}".format(self.score), True, "#454545")
             txtC = self.textSmall.render(f"High {self.highscore}", True, "#454545")
             txtD = self.textSmall.render("x{:05d}".format(self.kills), True, "#454545")
+            txtE = self.textSmall.render(f"Level {self.scrollSpeed}", True, "#454545")
 
             self.screenCTRL.blit(txtA, (vw / 3, 0))
-            self.screenCTRL.blit(txtB, (vw - 120, 12))
+            self.screenCTRL.blit(txtB, (vw - 115, 12))
             self.screenCTRL.blit(txtC, (vw - 225, 12))
             self.screenCTRL.blit(txtD, (60, 12))
+            self.screenCTRL.blit(txtE, (140, 12))
             self.screenCTRL.blit(self.trexIco, (10, 2.5))
             self.allSprites.update()
             self.allSprites.draw(self.screenCTRL)
@@ -228,7 +255,7 @@ class main:
 if __name__ == "__main__":
     try:
         pygame.init()
-        pygame.display.set_caption("PterodactylRun - V1.0.4")
+        pygame.display.set_caption("PterodactylRun - Build Version 1.0.4")
         main().play()
     except KeyboardInterrupt:
         main.errMsgFatal(errs[4])

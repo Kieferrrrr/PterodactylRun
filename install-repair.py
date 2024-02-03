@@ -5,37 +5,25 @@
 # Unit 14 - Assignment 2 - Part 2
 
 # Quick repair tool for PterodactylRun
-
+# Build Version 1.0.4
 
 import os
 import sys
 import time
-import requests
-import configparser
-
-from platform import system as OS
-
-if OS == "Windows":
-    cl = "cls"
-else:
-    cl = "clear"
 
 moduleList = [
-    "os",
-    "sys",
-    "time",
-    "json",
-    "pygame",
-    "random",
-    "platform",
-    "requests",
-    "threading",
-    "configparser"
+    "json", # Used for retrieving and setting values in resources/etc.scores.json
+    "pygame", # Python game engine 
+    "random", # Used for RNG to generate hazards for the player to avoid
+    "tkinter", # For building error message popups
+    "platform", # To detect the operating system and help the game run correcty
+    "requests", # Used to rebuild utility files 
+    "configparser" # Used to retrieve values in resoruces/etc/config.ini
 ]
 
 urlDict = {
-    "ini": "https://github.com/Kieferrrrr/PterodactylRun/resources/etc/config.ini",
-    "json": "https://github.com/Kieferrrrr/PterodactylRun/resources/etc/scores.json"
+    "ini": "https://raw.githubusercontent.com/Kieferrrrr/PterodactylRun/main/resources/etc/config.ini",
+    "json": "https://raw.githubusercontent.com/Kieferrrrr/PterodactylRun/main/resources/etc/scores.json"
 }
 
 class IR:
@@ -49,9 +37,8 @@ class IR:
         elif choice == 2:
             IR.repair()
         else:
-            print(" Invalid Option")
+            print(" Invalid Option\n")
             time.sleep(2)
-            os.system(cl)
             IR.menu()
 
     def install():
@@ -60,6 +47,37 @@ class IR:
         print("\n All required modules should be installed\n    Run 'py PterodactylRun.py'")
 
     def repair():
-        print
+        import requests
+        print("\n  [1] Repair config.ini")
+        print(" [2] Repair score.json\n")
+        rChoice = int(input(" >> "))
+        if rChoice == 1:
+            iniContent = requests.get(urlDict["ini"])
+            try:
+                os.remove("resources/etc/config.ini")
+            except:
+                pass
+            iniFile = open("resources/etc/config.ini")
+            iniFile.write(iniContent.text())
+            iniFile.close()
+            print("\n Rebuilt conifg.ini File")
+            time.sleep(2)
+            sys.exit()
+        elif rChoice == 2:
+            jsonContent = requests.get(urlDict["json"])
+            try:
+                os.remove("resources/etc/scores.json")
+            except:
+                pass
+            jsonFile = open("resources/etc/scores.json")
+            jsonFile.write(jsonContent.text())
+            jsonFile.close()
+            print("\n Rebuilt scores.json File")
+            time.sleep(2)
+            sys.exit()
+        else:
+            print(" Invalid Option\n")
+            time.sleep(2)
+            IR.repair()
 
 IR.menu()
