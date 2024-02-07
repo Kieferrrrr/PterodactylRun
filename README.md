@@ -20,7 +20,7 @@ py install-repair.py
 
 ### Running
 ```shell
-py PterodactylRun.py
+py PterodactylRun.pyw
 ```
 
 ## install-repair.py
