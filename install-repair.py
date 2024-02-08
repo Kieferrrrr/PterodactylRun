@@ -7,14 +7,14 @@
 # Quick repair tool for PterodactylRun
 # Build Version 1.0.4
 
-import os
-import sys
-import time
+import os   # These 3 modules are used
+import sys  # within this file, they
+import time # should come with Python 3
 
 moduleList = [
     "json", # Used for retrieving and setting values in resources/etc.scores.json
     "pygame", # Python game engine 
-    "random", # Used for RNG to generate hazards for the player to avoid
+    "random", # Used for RNG to generate hazards
     "tkinter", # For building error message popups
     "platform", # To detect the operating system and help the game run correcty
     "requests", # Used to rebuild utility files 
@@ -42,6 +42,8 @@ class IR:
             IR.menu()
 
     def install():
+        print("\n Consult the README.md file for minimum required module versions\n if installing modules does not fix module requirement issue\n")
+        time.sleep(3)
         for i in moduleList:
             os.system(f"pip install {i}")
         print("\n All required modules should be installed\n    Run 'py PterodactylRun.py'")

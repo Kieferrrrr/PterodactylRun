@@ -1,4 +1,4 @@
-# PterodactylRun
+# PterodactylRun.pyw
 
 # Level 3 Extended Diploma Computer Science
 # Year 2
@@ -10,6 +10,7 @@
 import os
 import sys
 import json
+import random
 import pygame
 import configparser
 
@@ -29,8 +30,8 @@ errs = {
     5: " Error Loading config.ini", # Config file is not where it should be or not existant
     6: " Error Loading scores.jsonc", # score saving file is not where it should be or not existant
     7: " Current Working Directory is Not the Same as the Game File", # Game must be run from the directory PterodactylRun.py is in
-    8: " PterodactylRun.py Cannot be Imported as a Module", # Attempted to import PterdactylRun.py to another file
-    9: " 'savesscores' values in config.ini is not useable" # savescores value in config.ini is not True/False
+    8: " PterodactylRun.py Cannot be Imported as a Module", # Attempted to import PterdactylRun.pyw to another file
+    9: " 'saveHigh' values in config.ini is not useable" # saveHigh value in config.ini is not True/False
 }
 
 if OS() == "Windows":
@@ -39,10 +40,10 @@ if OS() == "Windows":
 else:
     cl = "clear"
 
-
 vw = 750 # screen view width
 vh = 350 # screen view height
 
+pygame.init() # this had to be moved here from __name__ == __main__ due to font errors
 
 # Class for getting and setting values in config.ini and scores.json
 class dataHandler:
@@ -55,33 +56,33 @@ class dataHandler:
             sleep(2)
             sys.exit()
         fps = conf["CONFIG"]["fps"]
-        saveScores = conf["CONFIG"]["saveScores"]
+        saveHigh = conf["CONFIG"]["saveHigh"]
         self.saveDir = conf["CONFIG"]["saveDir"]
-        return int(fps), saveScores
+        return int(fps), saveHigh
 
     def getJSON(self):
         file = open(self.saveDir, "r")
         jsonData = json.loads(file.read())
         self.highscore = jsonData["highscore"]
-        lastscore = jsonData["lastscore"]
         file.close()
-        return self.highscore, lastscore
+        return self.highscore
 
     def setJSON(self, score):
         if int(score) > int(self.highscore):
             file = open(self.saveDir, "r+")
-            jsonData = {"highscore": f"{score}", "lastscore": f"{score}"}
+            jsonData = {"highscore": f"{score}"}
             file.seek(0)
             json.dump(jsonData, file, indent=4)
             file.truncate()
             file.close()
         elif int(score) < int(self.highscore):
             file = open(self.saveDir, "r+")
-            jsonData = {"highscore": f"{self.highscore}", "lastscore": f"{score}"}
+            jsonData = {"highscore": f"{self.highscore}"}
             file.seek(0)
             json.dump(jsonData, file, indent=4)
             file.truncate()
             file.close()
+
 
 # Class for all functions and variables related to the pterodactyl
 class pterodactyl(pygame.sprite.Sprite):
@@ -118,53 +119,18 @@ class pterodactyl(pygame.sprite.Sprite):
         self.Yspeed = -self.flySpeed
         self.image = self.flyingImg
 
-# Class for all functions and variables related to the cacti and T-Rex
-class hazards:
-    def __init__(self):
-        # Assets
-        self.trexA = pygame.image.load("resources/img/trexA.png")
-        self.trexB = pygame.image.load("resources/img/trexB.png")
-        self.trexC = pygame.image.load("resources/img/trexB.png")
-        self.cactusA = pygame.image.load("resources/img/cactusA.png")
-        self.cactusB = pygame.image.load("resources/img/cactusB.png")
-        self.cactusC = pygame.image.load("resources/img/cactusC.png")
-        # Values from main
-        self.getMain = main()
-        self.getMain.scrollSpeed
-        # Integers
-        self.rollCounter = 0
-
-    def rng(self):
-        if self.rollCounter >= 20:
-            self.rollCounter = 0
-
-        self.rollCounter = self.rollCounter + 1
-
-    def cactus(self):
-        print
-
-    # Weak algorithm for T-Rex controls
-    def trex(self):
-        print
-
-    def hitDetection(self):
-        print
-
 
 # Class for the main game loop
 class main:
     def __init__(self):
         # config.ini and scores.json
         self.dataParsing = dataHandler()
-        self.fps, self.savescores = self.dataParsing.getINI()
-        self.highscore, self.lastscore = self.dataParsing.getJSON()
+        self.fps, self.saveHigh = self.dataParsing.getINI()
+        self.highscore = self.dataParsing.getJSON()
         # Sprites
         self.allSprites = pygame.sprite.Group()
         self.player = pterodactyl()
         self.allSprites.add(self.player)
-        # PyGame Gameplay
-        self.screenCTRL = pygame.display.set_mode((vw, vh))
-        self.clock = pygame.time.Clock()
         # Assets
         self.backImg = pygame.image.load("resources/img/700x175.png")
         self.trexIco = pygame.image.load("resources/img/trexSmall.png")
@@ -177,6 +143,9 @@ class main:
         self.img2X = 700
         self.bothImgY = 275
         self.scrollSpeed = 1
+        # PyGame Gameplay
+        self.screenCTRL = pygame.display.set_mode((vw, vh))
+        self.clock = pygame.time.Clock()
 
     def play(self):
         running = True
@@ -232,13 +201,18 @@ class main:
         sys.exit()
 
     def die(self):
-        if self.savescores == True:
+        if self.saveHigh == True:
             self.dataParsing.writeJSON(self.score)
-        elif self.savescores == False:
+        elif self.saveHigh == False:
             print
         else:
             print(f"{errs[9]}\n     Saving score as a default") # popup window errs[] maybe
             self.dataParsing.writeJSON(self.score)
+        running = False
+        self.player.gravityOn = False
+        sleep(3)
+        main().play()
+        
 
     # Broad spectrum error handling
     def errMsgGeneric(err):
@@ -252,9 +226,46 @@ class main:
         messagebox.showinfo(title="Fatal Error", message=err)
 
 
+# Basic block of code for the cactus and trex class to inherit the contents
+class entityCTRL(object):
+    def __init__(self):
+        # Values from main
+        self.getMain = main()
+        self.scrollSpeed = self.getMain.scrollSpeed
+        self.tKills = self.getMain.kills
+        self.score = self.getMain.score
+        self.entity1X = 700
+        self.entity2X = 1000
+
+
+# Class for all of the additional functions and variables cacti need atfer inheriting entityCTRL
+class cactus(entityCTRL):
+    def __init__(self):
+        # Assets
+        self.cactusBA = pygame.image.load("resources/img/cactusBigA.png")
+        self.cactusBB = pygame.image.load("resources/img/cactusBigB.png")
+        self.cactusSA = pygame.image.load("resources/img/cactusSmallA.png")
+        self.cactusSB = pygame.image.load("resources/img/cactusSmallB.png")
+        self.img = random.choice(self.cactusBA, self.cactusBB, self.cactusSA, self.cactusSB)
+
+    def alive(self):
+        print
+
+
+# Class for all of the additional functions and variables the trex needs atfer inheriting entityCTRL
+class trex(entityCTRL):
+    def __init__(self):
+        # Assets
+        self.trexA = pygame.image.load("resources/img/trexA.png")
+        self.trexB = pygame.image.load("resources/img/trexB.png")
+
+    def alive(self):
+        print
+
+
 if __name__ == "__main__":
     try:
-        pygame.init()
+        pygame.display.set_icon(pygame.image.load("resources/img/trexSmall.png"))
         pygame.display.set_caption("PterodactylRun - Build Version 1.0.4")
         main().play()
     except KeyboardInterrupt:
