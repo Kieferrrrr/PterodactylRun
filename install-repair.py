@@ -5,20 +5,17 @@
 # Unit 14 - Assignment 2 - Part 2
 
 # Quick repair tool for PterodactylRun
-# Build Version 1.0.4
+# Build Version 1.0.5
 
 import os   # These 3 modules are used
 import sys  # within this file, they
 import time # should come with Python 3
 
+# Newest versions of these modules at the time of development
 moduleList = [
-    "json", # Used for retrieving and setting values in resources/etc.scores.json
-    "pygame", # Python game engine 
-    "random", # Used for RNG to generate hazards
-    "tkinter", # For building error message popups
-    "platform", # To detect the operating system and help the game run correcty
-    "requests", # Used to rebuild utility files 
-    "configparser" # Used to retrieve values in resoruces/etc/config.ini
+    "pygame==2.5.2", # Python game engine 
+    "requests==2.31.0", # Used to rebuild utility files 
+    "configparser==6.0.0" # Used to retrieve values in resoruces/etc/config.ini
 ]
 
 urlDict = {
@@ -27,7 +24,6 @@ urlDict = {
 }
 
 class IR:
-
     def menu():
         print(" [1] Install Modules")
         print(" [2] Repair Utility Files\n")
