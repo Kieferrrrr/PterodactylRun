@@ -1,49 +1,53 @@
-# PterodactylRun.pyw
+# PterodactlRun
 
 # Level 3 Extended Diploma Computer Science
 # Year 2
 # Unit 14 - Assignment 2 - Part 2
 
 # Main Game File for PterodactylRun
-# Build Version 1.0.4
+# Build Version 1.0.5
 
 import os
 import sys
 import json
 import random
-import pygame
-import configparser
+import pygame # Needs installing
+import configparser # Needs installing
 
 from time import sleep
 from datetime import datetime
-from tkinter import messagebox
-
-from platform import system as OS
-
 
 # Dictionary of basic/common errors
 errs = {
-    1: " Error Building GUI Window", # engine.guiGen() did not function correctly
-    2: " Error Rendering World", # engine.recurringGen() did not function correctly
-    3: " Error During Game Keep Alive", # Game ran into a fatal error whilst playing
-    4: " CTRL+C Pressed", # Keyboard interrupt, user wants to quit
-    5: " Error Loading config.ini", # Config file is not where it should be or not existant
-    6: " Error Loading scores.jsonc", # score saving file is not where it should be or not existant
-    7: " Current Working Directory is Not the Same as the Game File", # Game must be run from the directory PterodactylRun.py is in
-    8: " PterodactylRun.py Cannot be Imported as a Module", # Attempted to import PterdactylRun.pyw to another file
-    9: " 'saveHigh' values in config.ini is not useable" # saveHigh value in config.ini is not True/False
+    1: " CTRL+C pressed", # Keyboard interrupt pressed in the terminal
+    2: " Cannot import PterodactylRun.pyw as a module", # PterodactylRun.pyw is not a module
+    3: " Error reading config.ini\n     using default settings\n     run install-repair.py to fix", # config.ini could not be found/used
+    4: " Error readin scores.json\n     not loading or saving high scores\n     run install-repair.py to fix", # scores.json could not be found/used
+    5: " Unable detect your operating system\n     please create an issue on GitHub with the myOS tag", # Your OS was not recognised
+    6: " A value in config.ini is not useable\n    using default settings" # A value in config.ini is not in the correct format
 }
 
-if OS() == "Windows":
+if sys.platform == "win32": # Windows
     cl = "cls"
-    os.system("mode 80,20 && title Pterodactly Run - Version 1.0.4 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
-else:
+    os.system("mode 80,20 && title PterodactlyRun - Version 1.0.4 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
+    detOS = "Windows"
+elif sys.platform == "linux" or sys.platform == "linux2": # Linux
     cl = "clear"
+    detOS = "Linux"
+elif sys.platform == "darwin": # MacOS
+    cl = "clear"
+    detOS = "MacOS"
+else:
+    print(errs[5])
+    detOS = "Unreocgnised"
+
+print(" PterodactylRun Build Version 1.0.5 Debug Output")
+print(f" Detected host system - {detOS}")
 
 vw = 750 # screen view width
 vh = 350 # screen view height
 
-pygame.init() # this had to be moved here from __name__ == __main__ due to font errors
+pygame.init()
 
 # Class for getting and setting values in config.ini and scores.json
 class dataHandler:
@@ -51,40 +55,48 @@ class dataHandler:
         conf = configparser.ConfigParser()
         try:
             conf.read("resources/etc/config.ini")
+            startSpeed = conf["CONFIG"]["startSpeed"]
+            fps = conf["CONFIG"]["fps"]
+            saveHigh = conf["CONFIG"]["saveHigh"]
+            self.saveDir = conf["CONFIG"]["saveDir"]
+            self.saveDebug = conf["DEBUG"]["saveDebug"]
+            self.debugDir = conf["DEBUG"]["debugDir"]
         except:
-            print(errs[5])
-            sleep(2)
-            sys.exit()
-        fps = conf["CONFIG"]["fps"]
-        saveHigh = conf["CONFIG"]["saveHigh"]
-        self.saveDir = conf["CONFIG"]["saveDir"]
-        return int(fps), saveHigh
+            main.errMsgGeneric(errs[3])
+            fps = 60
+            startSpeed = 3
+            saveHigh = True
+            self.saveDir = "resources/etc/scores.json"
+            self.saveDebug = False
+            self.debugDir = None
+        return int(fps), int(startSpeed), saveHigh
 
     def getJSON(self):
-        file = open(self.saveDir, "r")
-        jsonData = json.loads(file.read())
-        self.highscore = jsonData["highscore"]
-        file.close()
+        try:
+            file = open(self.saveDir, "r")
+            jsonData = json.loads(file.read())
+            self.highscore = jsonData["highscore"]
+            file.close()
+        except:
+            self.noJSON = True
+            self.highscore = "00000"
+            main.errMsgGeneric(errs[4])
         return self.highscore
 
     def setJSON(self, score):
-        if int(score) > int(self.highscore):
+        try:
             file = open(self.saveDir, "r+")
-            jsonData = {"highscore": f"{score}"}
+            jsonData = {"highscore": "{:05d}".format(score)}
             file.seek(0)
             json.dump(jsonData, file, indent=4)
             file.truncate()
             file.close()
-        elif int(score) < int(self.highscore):
-            file = open(self.saveDir, "r+")
-            jsonData = {"highscore": f"{self.highscore}"}
-            file.seek(0)
-            json.dump(jsonData, file, indent=4)
-            file.truncate()
-            file.close()
+            print(f" New highscore saved to scores.json ({score})")
+        except:
+            print(" Failed to save new highscore")
+            main.errMsgGeneric(errs[5])
 
-
-# Class for all functions and variables related to the pterodactyl
+# Class for functions and variables related to the pterodactyl
 class pterodactyl(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -96,7 +108,7 @@ class pterodactyl(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() # getting the x, y, width, height
         self.rect.center = (vw // 4, vh // 2) # Set the center to 1/4 of the screen width and 1/2 of the screen height
         # Integers
-        self.gravity = 0.3
+        self.gravity = 0.2
         self.flySpeed = 5
         self.Yspeed = 0
         # Menu Animation
@@ -125,75 +137,109 @@ class main:
     def __init__(self):
         # config.ini and scores.json
         self.dataParsing = dataHandler()
-        self.fps, self.saveHigh = self.dataParsing.getINI()
+        self.fps, self.startSpeed, self.saveHigh = self.dataParsing.getINI()
         self.highscore = self.dataParsing.getJSON()
-        # Sprites
-        self.allSprites = pygame.sprite.Group()
+        # Sprites and Entities
+        self.playerSprite = pygame.sprite.Group()
+        self.entities = pygame.sprite.Group()
         self.player = pterodactyl()
-        self.allSprites.add(self.player)
+        self.cactusCTRL = cactus()
+        self.trexCTRL = trex()
+        self.playerSprite.add(self.player)
         # Assets
         self.backImg = pygame.image.load("resources/img/700x175.png")
         self.trexIco = pygame.image.load("resources/img/trexSmall.png")
         self.textBig = pygame.font.Font("resources/etc/GameOver.ttf", 75)
         self.textSmall = pygame.font.Font("resources/etc/GameOver.ttf", 48)
         # Integers
+        self.level = 1
+        self.levelScore = 0
         self.score = 00000
         self.kills = 00000
-        self.img1X = 0
-        self.img2X = 700
+        self.img1X = -350
+        self.img2X = 350
         self.bothImgY = 275
-        self.scrollSpeed = 1
+        self.scrollSpeed = self.startSpeed
         # PyGame Gameplay
         self.screenCTRL = pygame.display.set_mode((vw, vh))
         self.clock = pygame.time.Clock()
 
     def play(self):
-        running = True
-        img1X = self.img1X
-        img2X = self.img2X
-        while running:
+        self.running = True
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.dict["key"] == pygame.K_SPACE:
+                    if event.dict["key"] == pygame.K_SPACE and self.player.rect.y > 0:
                         self.player.flap()
                         self.player.gravityOn = True
                         break
-
-            img1X = img1X - self.scrollSpeed
-            img2X = img2X - self.scrollSpeed
-            self.screenCTRL.fill((255,255,255))
-            self.screenCTRL.blit(self.backImg, (img1X, self.bothImgY))
-            self.screenCTRL.blit(self.backImg, (img2X, self.bothImgY))
-            if img1X == -350 or img1X < -350:
-                img1X = 350
-            if img2X == -350 or img2X < -350:
-                img2X = 350
-            if img1X > 350:
-                img1X = 0
-            if img2X > 350:
-                img2X = 350
-
+            # Scroll the floor
+            self.img1X = self.img1X - self.scrollSpeed # Scroll image one along the X axis
+            self.img2X = self.img2X - self.scrollSpeed # Scroll image two along the X axis
+            # Show world assets
+            self.screenCTRL.fill((255,255,255)) # Paint the sky white
+            self.screenCTRL.blit(self.backImg, (self.img1X, self.bothImgY)) # Show floor image one
+            self.screenCTRL.blit(self.backImg, (self.img2X, self.bothImgY)) # Show floor image two
+            # Create UI text elements
+            txtA = self.textSmall.render("x{:05d}".format(self.kills).ljust(12) + f"Level {self.level}", True, "#454545")
+            txtB = self.textBig.render("PterodactylRun", True, "#454545")
+            txtC = self.textSmall.render("Score {:05d}".format(self.score).ljust(16) + f"High {self.highscore}", True, "#454545")
+            # Show UI text elements
+            self.screenCTRL.blit(txtA, (60, 12)) # Show t-rex counter and level
+            self.screenCTRL.blit(txtB, (vw / 3, 0)) # Show pterodactylRun Title
+            self.screenCTRL.blit(txtC, (vw - 250, 12)) # Show score and highscore
+            self.screenCTRL.blit(self.trexIco, (10, 2.5)) # Show t-rex kill counter icon
+            # Reload scrolling animation
+            if self.img1X <= -700:
+                self.img1X = 700
+            if self.img2X <= -700:
+                self.img2X = 700
+            # Start game screen
             if self.player.gravityOn == False:
                 txtG = self.textBig.render("Press [SPACE] to Start", True, "#454545")
                 self.screenCTRL.blit(txtG, (vw / 3.6, 50))
-
-
-            txtA = self.textBig.render("PterodactylRun", True, "#454545")
-            txtB = self.textSmall.render("Score {:05d}".format(self.score), True, "#454545")
-            txtC = self.textSmall.render(f"High {self.highscore}", True, "#454545")
-            txtD = self.textSmall.render("x{:05d}".format(self.kills), True, "#454545")
-            txtE = self.textSmall.render(f"Level {self.scrollSpeed}", True, "#454545")
-
-            self.screenCTRL.blit(txtA, (vw / 3, 0))
-            self.screenCTRL.blit(txtB, (vw - 115, 12))
-            self.screenCTRL.blit(txtC, (vw - 225, 12))
-            self.screenCTRL.blit(txtD, (60, 12))
-            self.screenCTRL.blit(txtE, (140, 12))
-            self.screenCTRL.blit(self.trexIco, (10, 2.5))
-            self.allSprites.update()
-            self.allSprites.draw(self.screenCTRL)
+            # Spawn, scroll, show and die to cacti
+            if self.player.gravityOn == True:
+                for i in self.cactusCTRL.cacti:
+                    if self.cactusCTRL.cacti[i]["ALIVE"] == False:
+                        while True:
+                            rndX = random.randint(700, 1400)
+                            if rndX <= self.cactusCTRL.lastX - 120 or rndX >= self.cactusCTRL.lastX + 120:
+                                self.cactusCTRL.lastX = rndX
+                                print(f" Cacti last X co-ord {self.cactusCTRL.lastX}")
+                                break
+                            else:
+                                print(" Tried to spawn cactus too close to last cactus")
+                        self.cactusCTRL.cacti[i]["X"] = rndX
+                        self.cactusCTRL.cacti[i]["IMG"] = random.choice(self.cactusCTRL.cactiImgs)
+                        self.cactusCTRL.cacti[i]["ALIVE"] = True
+                        self.cactusCTRL.cacti[i]["AVOIDED"] = False
+                    elif self.cactusCTRL.cacti[i]["ALIVE"] == True:
+                        self.cactusCTRL.cacti[i]["X"] = self.cactusCTRL.cacti[i]["X"] - self.scrollSpeed
+                        if self.cactusCTRL.cacti[i]["X"] <= vw // 4:
+                            if self.player.rect.y < 108: # when i put this on the above "if" statement with an "and" it didnt work for some reason
+                                if self.cactusCTRL.cacti[i]["AVOIDED"] == False:
+                                    self.score = self.score + 1
+                                    self.cactusCTRL.cacti[i]["AVOIDED"] = True
+                            else:
+                                print(" You crashed into a cactus")
+                                main.die(self)
+                        self.screenCTRL.blit(self.cactusCTRL.cacti[i]["IMG"], (self.cactusCTRL.cacti[i]["X"], vh / 2.08))
+                        if self.cactusCTRL.cacti[i]["X"] <= -125:
+                            self.cactusCTRL.cacti[i]["ALIVE"] = False
+            if self.player.rect.y >= vh / 1.6:
+                print(" You crashed into the floor")
+                main.die(self)
+            # Checking and setting level
+            if self.score == self.levelScore + 50 or self.score > self.levelScore + 50:
+                self.levelScore = self.levelScore + 50
+                self.level = self.level + 1
+                self.scrollSpeed = self.scrollSpeed + 1
+            # Commit changes
+            self.playerSprite.update()  
+            self.playerSprite.draw(self.screenCTRL)
             pygame.display.flip()
             self.clock.tick(self.fps)
 
@@ -201,76 +247,78 @@ class main:
         sys.exit()
 
     def die(self):
-        if self.saveHigh == True:
-            self.dataParsing.writeJSON(self.score)
-        elif self.saveHigh == False:
-            print
-        else:
-            print(f"{errs[9]}\n     Saving score as a default") # popup window errs[] maybe
-            self.dataParsing.writeJSON(self.score)
-        running = False
-        self.player.gravityOn = False
-        sleep(3)
-        main().play()
-        
+        self.running = False
+        if int(self.score) > int(self.highscore):
+            self.dataParsing.setJSON(self.score)
+        restart = self.textBig.render("Game Over Press [SPACE] to Restart", True, "#454545")
+        while True:
+            self.screenCTRL.blit(restart, (vw / 6, 50))
+            self.playerSprite.draw(self.screenCTRL) # Keep the pterodactyl corpse on screen
+            for i in self.cactusCTRL.cacti: # Keep all the cacti on screen
+                self.screenCTRL.blit(self.cactusCTRL.cacti[i]["IMG"], (self.cactusCTRL.cacti[i]["X"], vh / 2.08))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.dict["key"] == pygame.K_SPACE:
+                        print(" Restarted game")
+                        main().play()
+            pygame.display.flip()
 
-    # Broad spectrum error handling
-    def errMsgGeneric(err):
-        print
-
-    # Fatal error handling
-    def errMsgFatal(err):
+    # Broad spectrum error messages for fixable errors
+    def errMsgGeneric(self, err):
+        print(err)
+        return
+    
+    # Fatal error messages
+    def errMsgFatal(self, err):
         pygame.quit()
         print(err)
-        # Tk().wm_withdraw() #to hide the main window
-        messagebox.showinfo(title="Fatal Error", message=err)
+        sys.exit()
 
 
-# Basic block of code for the cactus and trex class to inherit the contents
-class entityCTRL(object):
+# Basically just seperating the cacti variables away from the rest
+class cactus(pygame.sprite.Sprite):
     def __init__(self):
-        # Values from main
-        self.getMain = main()
-        self.scrollSpeed = self.getMain.scrollSpeed
-        self.tKills = self.getMain.kills
-        self.score = self.getMain.score
-        self.entity1X = 700
-        self.entity2X = 1000
-
-
-# Class for all of the additional functions and variables cacti need atfer inheriting entityCTRL
-class cactus(entityCTRL):
-    def __init__(self):
+        super().__init__()
         # Assets
-        self.cactusBA = pygame.image.load("resources/img/cactusBigA.png")
-        self.cactusBB = pygame.image.load("resources/img/cactusBigB.png")
-        self.cactusSA = pygame.image.load("resources/img/cactusSmallA.png")
-        self.cactusSB = pygame.image.load("resources/img/cactusSmallB.png")
-        self.img = random.choice(self.cactusBA, self.cactusBB, self.cactusSA, self.cactusSB)
+        self.cactusA = pygame.image.load("resources/img/cactusBigA.png")
+        self.cactusB = pygame.image.load("resources/img/cactusBigB.png")
+        self.cactiImgs = [self.cactusA, self.cactusB]
+        # Variables
+        self.rect = self.cactusA.get_rect()
+        self.lastX = 0
+        # Nested dictionary of rendered cacti variables
+        self.cacti = {
+            1: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
+            2: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
+            3: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
+            4: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False}
+        }
+    
 
-    def alive(self):
-        print
-
-
-# Class for all of the additional functions and variables the trex needs atfer inheriting entityCTRL
-class trex(entityCTRL):
+# And again, just sperating the t-rex variables
+class trex(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init__()
         # Assets
         self.trexA = pygame.image.load("resources/img/trexA.png")
         self.trexB = pygame.image.load("resources/img/trexB.png")
-
-    def alive(self):
-        print
+        # T-rex control variables
+        self.trexX = None
+        self.trexImg = self.trexA
+        self.spawned = False
+        self.killed = False
 
 
 if __name__ == "__main__":
     try:
         pygame.display.set_icon(pygame.image.load("resources/img/trexSmall.png"))
-        pygame.display.set_caption("PterodactylRun - Build Version 1.0.4")
+        pygame.display.set_caption("PterodactylRun - Build Version 1.0.5")
         main().play()
     except KeyboardInterrupt:
-        main.errMsgFatal(errs[4])
+        main.errMsgFatal(main, errs[1])
 else:
-    print(errs[8])
+    main.errMsgFatal(main, errs[2])
     sleep(2)
     sys.exit()
