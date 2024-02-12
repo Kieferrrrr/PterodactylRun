@@ -2,14 +2,15 @@
 College Assignment Work for a Games Development Unit
 [.GIF OF GAMEPLAY]
 
-# Description - Build Version 1.0.4
+# Description - Build Version 1.0.5
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
-ground and the hazards that lay on it whilst looking out for T-Rexes to collect. 
+ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.0.5 is the first fully working build with 
+neat-ish code which i submitted for the college assignment first submission.
 
 ## How To Play
-PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti, rocks and stay of the ground.
-When a T-Rex appears you have to fly close to the ground and hit it, hitting a T-Rex is worth 5 points and each cactus and rock you 
-avoid is worth 1 point. Each time you go over 250 points you progress to the next level which increases the speed of the game.
+PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti and stay off the ground.
+When a T-Rex appears you have to fly close to the ground and hit it, hitting a T-Rex is worth 5 points and each cactus and you 
+avoid is worth 1 point. Each time you go over 50 points you progress to the next level which increases the speed of the game.
 
 ### Clone and Install
 ```shell
