@@ -30,7 +30,7 @@ PterodactylRun comes with a python file called "install-repair.py", this file is
 might not come with. The other function of this file is for rebuilding the utility files "config.ini" and "scores.json".
 
 
-## Licensing and Chromium Information
+# Licensing and Chromium Information
 Assets used are from the original Chromium source code which are licensed under the BSD 3-Clause license, this license allows modification
 and redistribution of its content aslong as it is published under the same BSD 3-Clause license and no warranty or liability it provided.
 
