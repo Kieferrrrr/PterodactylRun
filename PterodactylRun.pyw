@@ -5,7 +5,7 @@
 # Unit 14 - Assignment 2 - Part 2
 
 # Main Game File for PterodactylRun
-# Build Version 1.0.5
+# Build Version 1.5.1
 
 import os
 import sys
@@ -47,6 +47,9 @@ print(f" Detected host system - {detOS}")
 vw = 750 # screen view width
 vh = 350 # screen view height
 
+fileDir = os.path.realpath(__file__) # Game directory
+dir = os.path.dirname(fileDir)
+
 pygame.init()
 
 # Class for getting and setting values in config.ini and scores.json
@@ -54,7 +57,7 @@ class dataHandler:
     def getINI(self):
         conf = configparser.ConfigParser()
         try:
-            conf.read("resources/etc/config.ini")
+            conf.read(f"resources/etc/config.ini")
             startSpeed = conf["CONFIG"]["startSpeed"]
             fps = conf["CONFIG"]["fps"]
             saveHigh = conf["CONFIG"]["saveHigh"]
@@ -66,7 +69,7 @@ class dataHandler:
             fps = 60
             startSpeed = 3
             saveHigh = True
-            self.saveDir = "resources/etc/scores.json"
+            self.saveDir = f"resources/etc/scores.json"
             self.saveDebug = False
             self.debugDir = None
         return int(fps), int(startSpeed), saveHigh
@@ -101,8 +104,8 @@ class pterodactyl(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Assets
-        self.fallingImg = pygame.image.load("resources/img/pterodactylA.png")
-        self.flyingImg = pygame.image.load("resources/img/pterodactylB.png")
+        self.fallingImg = pygame.image.load(f"resources/img/pterodactylA.png")
+        self.flyingImg = pygame.image.load(f"resources/img/pterodactylB.png")
         # Image Handling
         self.image = self.fallingImg
         self.rect = self.image.get_rect() # getting the x, y, width, height
@@ -147,10 +150,10 @@ class main:
         self.trexCTRL = trex()
         self.playerSprite.add(self.player)
         # Assets
-        self.backImg = pygame.image.load("resources/img/700x175.png")
-        self.trexIco = pygame.image.load("resources/img/trexSmall.png")
-        self.textBig = pygame.font.Font("resources/etc/GameOver.ttf", 75)
-        self.textSmall = pygame.font.Font("resources/etc/GameOver.ttf", 48)
+        self.backImg = pygame.image.load(f"resources/img/700x175.png")
+        self.trexIco = pygame.image.load(f"resources/img/trexSmall.png")
+        self.textBig = pygame.font.Font(f"resources/etc/GameOver.ttf", 75)
+        self.textSmall = pygame.font.Font(f"resources/etc/GameOver.ttf", 48)
         # Integers
         self.level = 1
         self.levelScore = 0
@@ -282,8 +285,8 @@ class cactus(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Assets
-        self.cactusA = pygame.image.load("resources/img/cactusBigA.png")
-        self.cactusB = pygame.image.load("resources/img/cactusBigB.png")
+        self.cactusA = pygame.image.load(f"resources/img/cactusBigA.png")
+        self.cactusB = pygame.image.load(f"resources/img/cactusBigB.png")
         self.cactiImgs = [self.cactusA, self.cactusB]
         # Variables
         self.rect = self.cactusA.get_rect()
@@ -302,8 +305,8 @@ class trex(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Assets
-        self.trexA = pygame.image.load("resources/img/trexA.png")
-        self.trexB = pygame.image.load("resources/img/trexB.png")
+        self.trexA = pygame.image.load(f"resources/img/trexA.png")
+        self.trexB = pygame.image.load(f"resources/img/trexB.png")
         # T-rex control variables
         self.trexX = None
         self.trexImg = self.trexA
@@ -313,7 +316,7 @@ class trex(pygame.sprite.Sprite):
 
 if __name__ == "__main__":
     try:
-        pygame.display.set_icon(pygame.image.load("resources/img/trexSmall.png"))
+        pygame.display.set_icon(pygame.image.load(f"resources/img/trexSmall.png"))
         pygame.display.set_caption("PterodactylRun - Build Version 1.0.5")
         main().play()
     except KeyboardInterrupt:
