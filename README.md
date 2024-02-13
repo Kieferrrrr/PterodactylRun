@@ -6,7 +6,8 @@ College Assignment Work for a Games Development Unit
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
 ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.5.1 is the first fully working build with 
 neat-ish code which i submitted for the college assignment first submission. During the resubmission period of the assignment a 
-version 2 will be made to fix and rework errors and bad python practices (becuase theres a lot).
+version 2 will be made to fix and rework errors and bad python practices (becuase theres a lot). Version 2 will improve the code
+substantially (more object oriented), reduce/remove bugs and include new features.
 
 ## How To Play
 PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti and stay off the ground.
@@ -30,7 +31,7 @@ PterodactylRun comes with a python file called "install-repair.py", this file is
 might not come with. The other function of this file is for rebuilding the utility files "config.ini" and "scores.json".
 
 
-# Licensing and Chromium Information
+## Licensing and Chromium Information
 Assets used are from the original Chromium source code which are licensed under the BSD 3-Clause license, this license allows modification
 and redistribution of its content aslong as it is published under the same BSD 3-Clause license and no warranty or liability it provided.
 
