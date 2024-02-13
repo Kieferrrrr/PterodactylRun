@@ -29,7 +29,7 @@ errs = {
 
 if sys.platform == "win32": # Windows
     cl = "cls"
-    os.system("mode 80,20 && title PterodactlyRun - Version 1.0.4 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
+    os.system("mode 80,20 && title PterodactlyRun - Version 1.5.1 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
     detOS = "Windows"
 elif sys.platform == "linux" or sys.platform == "linux2": # Linux
     cl = "clear"
@@ -41,7 +41,7 @@ else:
     print(errs[5])
     detOS = "Unreocgnised"
 
-print(" PterodactylRun Build Version 1.0.5 Debug Output")
+print(" PterodactylRun Build Version 1.5.1 Debug Output")
 print(f" Detected host system - {detOS}")
 
 vw = 750 # screen view width
@@ -64,6 +64,9 @@ class dataHandler:
             self.saveDir = conf["CONFIG"]["saveDir"]
             self.saveDebug = conf["DEBUG"]["saveDebug"]
             self.debugDir = conf["DEBUG"]["debugDir"]
+            self.testMode = conf["TEST"]["testMode"]
+            if self.testMode == True:
+                print(" You are in test mode\n    you cannot set a highscore")
         except:
             main.errMsgGeneric(errs[3])
             fps = 60
@@ -72,6 +75,7 @@ class dataHandler:
             self.saveDir = f"resources/etc/scores.json"
             self.saveDebug = False
             self.debugDir = None
+            self.testMode = False
         return int(fps), int(startSpeed), saveHigh
 
     def getJSON(self):
@@ -132,7 +136,14 @@ class pterodactyl(pygame.sprite.Sprite):
 
     def flap(self):
         self.Yspeed = -self.flySpeed
-        self.image = self.flyingImg
+        if self.image == self.fallingImg:
+            if datetime.now().timestamp() - self.cTime >= 0.1:
+                self.image = self.flyingImg
+                self.cTime = datetime.now().timestamp()
+        elif self.image == self.flyingImg:
+            if datetime.now().timestamp() - self.cTime >= 0.1:
+                self.image = self.fallingImg
+                self.cTime = datetime.now().timestamp()
 
 
 # Class for the main game loop
@@ -176,6 +187,8 @@ class main:
                 elif event.type == pygame.KEYDOWN:
                     if event.dict["key"] == pygame.K_SPACE and self.player.rect.y > 0:
                         self.player.flap()
+                        #if datetime.now().timestamp() - self.player.cTime >= 0.2:
+                        #    self.player.image = self.player.fallingImg
                         self.player.gravityOn = True
                         break
             # Scroll the floor
@@ -211,7 +224,7 @@ class main:
                             rndX = random.randint(700, 1400)
                             if rndX <= self.cactusCTRL.lastX - 120 or rndX >= self.cactusCTRL.lastX + 120:
                                 self.cactusCTRL.lastX = rndX
-                                print(f" Cacti last X co-ord {self.cactusCTRL.lastX}")
+                                print(f" Spawned cactus at {self.cactusCTRL.lastX}")
                                 break
                             else:
                                 print(" Tried to spawn cactus too close to last cactus")
@@ -232,6 +245,23 @@ class main:
                         self.screenCTRL.blit(self.cactusCTRL.cacti[i]["IMG"], (self.cactusCTRL.cacti[i]["X"], vh / 2.08))
                         if self.cactusCTRL.cacti[i]["X"] <= -125:
                             self.cactusCTRL.cacti[i]["ALIVE"] = False
+
+                self.trexCTRL.rng()
+                if self.trexCTRL.spawned == True:
+                    self.trexCTRL.trexX = self.trexCTRL.trexX - (self.scrollSpeed + 1)
+                    self.screenCTRL.blit(self.trexCTRL.trexImg, (self.trexCTRL.trexX, vh / 1.9))
+                    if self.trexCTRL.tTime - self.trexCTRL.tTime >= 0.1:
+                        if self.trexCTRL.trexImg == self.trexCTRL.trexA:
+                            self.trexCTRL.trexImg = self.trexCTRL.trexB
+                            self.trexCTRL.tTime = datetime.now().timestamp()
+                        elif self.trexCTRL.trexImg == self.trexCTRL.trexB:
+                            self.trexCTRL.trexImg = self.trexCTRL.trexA
+                            self.trexCTRL.tTime = datetime.now().timestamp()
+                    if self.trexCTRL.trexX <= -730:
+                        self.trexCTRL.spawned = False
+                    
+
+
             if self.player.rect.y >= vh / 1.6:
                 print(" You crashed into the floor")
                 main.die(self)
@@ -259,6 +289,8 @@ class main:
             self.playerSprite.draw(self.screenCTRL) # Keep the pterodactyl corpse on screen
             for i in self.cactusCTRL.cacti: # Keep all the cacti on screen
                 self.screenCTRL.blit(self.cactusCTRL.cacti[i]["IMG"], (self.cactusCTRL.cacti[i]["X"], vh / 2.08))
+            if self.trexCTRL.spawned == True:
+                self.screenCTRL.blit(self.trexCTRL.trexImg, (self.trexCTRL.trexX, vh / 1.9))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -312,12 +344,21 @@ class trex(pygame.sprite.Sprite):
         self.trexImg = self.trexA
         self.spawned = False
         self.killed = False
+        self.tTime = datetime.now().timestamp()
+
+    def rng(self):
+        if self.spawned == False:
+            rand = random.randint(0, 1000)
+            if rand == 500:
+                self.spawned = True
+                self.trexX = random.randint(700, 1400)
+                print(f" T-Rex spawned at {self.trexX}")
 
 
 if __name__ == "__main__":
     try:
         pygame.display.set_icon(pygame.image.load(f"resources/img/trexSmall.png"))
-        pygame.display.set_caption("PterodactylRun - Build Version 1.0.5")
+        pygame.display.set_caption("PterodactylRun - Build Version 1.5.1")
         main().play()
     except KeyboardInterrupt:
         main.errMsgFatal(main, errs[1])
