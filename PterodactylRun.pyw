@@ -62,20 +62,12 @@ class dataHandler:
             fps = conf["CONFIG"]["fps"]
             saveHigh = conf["CONFIG"]["saveHigh"]
             self.saveDir = conf["CONFIG"]["saveDir"]
-            self.saveDebug = conf["DEBUG"]["saveDebug"]
-            self.debugDir = conf["DEBUG"]["debugDir"]
-            self.testMode = conf["TEST"]["testMode"]
-            if self.testMode == True:
-                print(" You are in test mode\n    you cannot set a highscore")
         except:
-            main.errMsgGeneric(errs[3])
+            main.errMsgGeneric(self, errs[3])
             fps = 60
             startSpeed = 3
             saveHigh = True
             self.saveDir = f"resources/etc/scores.json"
-            self.saveDebug = False
-            self.debugDir = None
-            self.testMode = False
         return int(fps), int(startSpeed), saveHigh
 
     def getJSON(self):
@@ -87,7 +79,7 @@ class dataHandler:
         except:
             self.noJSON = True
             self.highscore = "00000"
-            main.errMsgGeneric(errs[4])
+            main.errMsgGeneric(self, errs[4])
         return self.highscore
 
     def setJSON(self, score):
@@ -101,7 +93,7 @@ class dataHandler:
             print(f" New highscore saved to scores.json ({score})")
         except:
             print(" Failed to save new highscore")
-            main.errMsgGeneric(errs[5])
+            main.errMsgGeneric(self, errs[5])
 
 # Class for functions and variables related to the pterodactyl
 class pterodactyl(pygame.sprite.Sprite):
@@ -250,8 +242,11 @@ class main:
                             self.trexCTRL.tTime = datetime.now().timestamp()
                     if self.trexCTRL.trexX <= -730:
                         self.trexCTRL.spawned = False
-                    
-
+                    if self.trexCTRL.trexX in range(115, 135) and self.player.rect.y <= 85:
+                        self.kills = self.kills + 1
+                        self.score = self.score + 5
+                        self.trexCTRL.spawned = False
+                        print(" T-Rex killed")
 
             if self.player.rect.y >= vh / 1.6:
                 print(" You crashed into the floor")
