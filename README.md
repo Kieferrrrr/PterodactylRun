@@ -4,10 +4,10 @@ College Assignment Work for a Games Development Unit
 
 # Description - Build Version 1.7.0
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
-ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.7.0 is the first fully working build with 
+ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.7.0 is the best fully working build with 
 neat-ish code which i submitted for the college assignment first submission. During the resubmission period of the assignment a 
 version 2 will be made to fix and rework errors and bad python practices (becuase theres a few). Version 2 will improve the code,
-reduce/remove bugs and include new features.
+reduce/remove bugs and include new features. However, 1.7.0 is playable enough to get the idea of the games concept and functionality.
 
 ## How To Play
 PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti and stay off the ground.

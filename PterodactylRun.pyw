@@ -64,9 +64,6 @@ class dataHandler:
         self.fps = 60
         self.saveHigh = True
         self.saveDir = f"{ptDir}resources/etc/scores.json"
-        self.saveDebug = False
-        self.debugDir = None # Just to avoid errors
-        self.invincible = False
         # Default score.json settings incase of file errors
         self.highscore = "00000"
 
@@ -90,17 +87,20 @@ class dataHandler:
             with open(f"{ptDir}{self.saveDir}", "r") as jsonFile:
                 jsonData = json.loads(jsonFile.read())
                 self.highscore = jsonData["highscore"]
+            jsonFile.close()
         except FileNotFoundError:
             main.errMsgGeneric(self, errs[4])
 
     def setJSON(self, score):
+        score = int(score)
         try:
-            with open(f"{ptDir}{self.saveDir}", "r") as jsonFile:
+            with open(f"{ptDir}{self.saveDir}", "+r") as jsonFile:
                 jsonData = {"highscore": "{:05d}".format(score)}
                 jsonFile.seek(0)
                 json.dump(jsonData, jsonFile, indent=4)
                 jsonFile.truncate() 
                 print(f" New highscore saved to scores.json ({score})")
+            jsonFile.close()
         except FileNotFoundError:
             main.errMsgGeneric(self, errs[7])
 
@@ -248,7 +248,7 @@ class main():
             self.dataParsing.setJSON(self.score)
         restart = self.textBig.render("Game Over Press [SPACE] to Restart", True, "#454545")
         while True:
-            self.playerSprite.draw(screenCTRL)
+            #self.playerSprite.draw(screenCTRL)
             screenCTRL.blit(restart, (vw / 7, 50))
             for i in self.cactiCTRL.cactiVars:
                 if self.cactiCTRL.cactiVars[i]["ALIVE"]:
@@ -325,20 +325,13 @@ class cacti():
             if self.cactiVars[i]["ALIVE"] == True:
                 self.cactiVars[i]["X"] = self.cactiVars[i]["X"] - scrollSpeed
                 if self.cactiVars[i]["AVOIDED"] == False:
-                    if self.cactiVars[i]["IMG"] == self.cactusImgA:
-                        a = 0
-                        b = 0
-                    elif self.cactiVars[i]["IMG"] == self.cactusImgB:
-                        a = 0
-                        b = 0
-                    if self.cactiVars[i]["X"] in range(150, 240):
-                        if player.rect.y < 100:
-                            self.cactiVars[i]["AVOIDED"] = True
-                            self.score = self.score + 1
-                        elif player.rect.y >= 100:
-                            print(" You crashed into a cactus")
-                            print(self.cactiVars[i]["X"])
-                            main.die(main(), self.score)
+                    if player.rect.y >= 100 and self.cactiVars[i]["X"] in range(160, 230):
+                        print(" You crashed into a cactus")
+                        self.cactiVars[i]["AVOIDED"] = False
+                        main.die(main(), self.score)
+                    if self.cactiVars[i]["X"] <= 175:
+                        self.cactiVars[i]["AVOIDED"] = True
+                        self.score = self.score + 1
                 elif self.cactiVars[i]["AVOIDED"] == True:
                     pass
                 screenCTRL.blit(self.cactiVars[i]["IMG"], (self.cactiVars[i]["X"], vh / 2.08))
@@ -361,6 +354,7 @@ class trex():
         self.stepTimer = None
 
     def rng(self, player, scrollSpeed, score, kills):
+        self.player = player
         self.scrollSpeed = scrollSpeed
         self.score = score
         self.kills = kills
@@ -369,6 +363,7 @@ class trex():
             if rnd == 500:
                 self.spawned = True
                 self.trexX = random.randint(700, 1400)
+                self.stepTimer = datetime.now().timestamp()
                 print(f" T-Rex spawned at {self.trexX}")
         elif self.spawned == True:
             trex.alive(self)
@@ -377,7 +372,6 @@ class trex():
     def alive(self):
         self.trexX = self.trexX - (self.scrollSpeed + 1)
         screenCTRL.blit(self.trexImg, (self.trexX, vh / 1.9))
-        self.stepTimer = datetime.now().timestamp()
         if datetime.now().timestamp() - self.stepTimer >= 0.1:
             if self.trexImg == self.trexA:
                 self.trexImg = self.trexB
@@ -386,7 +380,13 @@ class trex():
             self.stepTimer = datetime.now().timestamp()
         if self.trexX <= -730:
             self.spawned = False
-
+        if self.spawned == True:
+            if self.player.rect.y >= 90 and self.trexX in range(160, 230):
+                print(" You killed a T-Rex")
+                self.spawned = False
+                self.kills = self.kills + 1
+                self.score = self.score + 5
+                
 
 if __name__ == "__main__":
     try:
