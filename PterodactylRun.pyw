@@ -229,7 +229,7 @@ class main():
                 print(" You crashed into the floor")
                 main.die(self, self.score)
             # Checking and setting level
-            if self.score == self.levelScore >= self.levelScore + 50:
+            if int(self.score) >= self.levelScore + 50:
                 self.levelScore = self.levelScore + 50
                 self.level = self.level + 1
                 self.scrollSpeed = self.scrollSpeed + 1
