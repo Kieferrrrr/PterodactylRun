@@ -251,7 +251,7 @@ class main():
             #self.playerSprite.draw(screenCTRL)
             screenCTRL.blit(restart, (vw / 7, 50))
             for i in self.cactiCTRL.cactiVars:
-                if self.cactiCTRL.cactiVars[i]["ALIVE"]:
+                if self.cactiCTRL.cactiVars[i]["ALIVE"] == True:
                     screenCTRL.blit(self.cactiCTRL.cactiVars[i]["IMG"] , (self.cactiCTRL.cactiVars[i]["X"], vh / 2.08))
             if self.trexCTRL.spawned == True:
                 screenCTRL.blit(self.trexCTRL.trexImg, (self.trexCTRL.trexX, vh / 1.9))
@@ -289,12 +289,14 @@ class cacti():
         # Integers
         self.rndX = None
         self.rect = self.cactusImgA.get_rect()
+        self.a = None
+        self.b = None
         # Nested dictionary of rendered cacti variables
         self.cactiVars = {
-            1: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
-            2: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
-            3: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False},
-            4: {"X": None, "IMG": None, "ALIVE": False, "AVOIDED": False}
+            1: {"X": None, "IMG": None, "A":None, "B":None, "ALIVE": False, "AVOIDED": False},
+            2: {"X": None, "IMG": None, "A":None, "B":None, "ALIVE": False, "AVOIDED": False},
+            3: {"X": None, "IMG": None, "A":None, "B":None, "ALIVE": False, "AVOIDED": False},
+            4: {"X": None, "IMG": None, "A":None, "B":None, "ALIVE": False, "AVOIDED": False}
         }
         # Queue of previously generated cacti X co-ordinates
         self.cactiPrevious = []
@@ -318,6 +320,12 @@ class cacti():
                     break
                 self.cactiVars[i]["X"] = self.rndX
                 self.cactiVars[i]["IMG"] = random.choice(self.cactiImgs)
+                if self.cactiVars[i]["IMG"] == self.cactusImgA:
+                    self.cactiVars[i]["A"] = 160
+                    self.cactiVars[i]["B"] = 230
+                if self.cactiVars[i]["IMG"] == self.cactusImgB:
+                    self.cactiVars[i]["A"] = 130
+                    self.cactiVars[i]["B"] = 230
                 self.cactiVars[i]["ALIVE"] = True
                 self.cactiVars[i]["AVOIDED"] = False
                 print(f" Cactus spawned at {self.cactiVars[i]['X']}")
@@ -325,7 +333,7 @@ class cacti():
             if self.cactiVars[i]["ALIVE"] == True:
                 self.cactiVars[i]["X"] = self.cactiVars[i]["X"] - scrollSpeed
                 if self.cactiVars[i]["AVOIDED"] == False:
-                    if player.rect.y >= 100 and self.cactiVars[i]["X"] in range(160, 230):
+                    if player.rect.y >= 100 and self.cactiVars[i]["X"] in range(self.cactiVars[i]["A"], self.cactiVars[i]["B"]):
                         print(" You crashed into a cactus")
                         self.cactiVars[i]["AVOIDED"] = False
                         main.die(main(), self.score)
@@ -386,7 +394,7 @@ class trex():
                 self.spawned = False
                 self.kills = self.kills + 1
                 self.score = self.score + 5
-                
+
 
 if __name__ == "__main__":
     try:
