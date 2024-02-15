@@ -2,12 +2,12 @@
 College Assignment Work for a Games Development Unit
 [.GIF OF GAMEPLAY]
 
-# Description - Build Version 1.5.1
+# Description - Build Version 1.7.0
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
-ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.5.1 is the first fully working build with 
+ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.7.0 is the first fully working build with 
 neat-ish code which i submitted for the college assignment first submission. During the resubmission period of the assignment a 
-version 2 will be made to fix and rework errors and bad python practices (becuase theres a lot). Version 2 will improve the code
-substantially (more object oriented), reduce/remove bugs and include new features.
+version 2 will be made to fix and rework errors and bad python practices (becuase theres a few). Version 2 will improve the code,
+reduce/remove bugs and include new features.
 
 ## How To Play
 PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti and stay off the ground.
@@ -29,6 +29,22 @@ py PterodactylRun.pyw
 ## install-repair.py
 PterodactylRun comes with a python file called "install-repair.py", this file is for installing the required modules that Python3 installs
 might not come with. The other function of this file is for rebuilding the utility files "config.ini" and "scores.json".
+
+
+## Minimum Technical Requirements
+PterodactylRun was created using a mix of Python 3.9.1 and Python 3.11.3 and it functions fine on both of these versions however the modules
+which require installation have minimum Python version requirements. At the time of development the install-repair.py file will install the
+versions of the modules specified below. Bearing this in mind, at the time of development you will require a minimum of Python 3.8 to run this
+code.
+
+### PyGame 2.5.2
+Python >= 3.6
+
+### Requests 2.31.0
+Python >= 3.7
+
+### Configparser 6.0.0
+Python >= 3.8
 
 
 ## Licensing and Chromium Information

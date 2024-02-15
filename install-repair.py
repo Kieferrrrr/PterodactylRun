@@ -3,9 +3,11 @@
 # Level 3 Extended Diploma Computer Science
 # Year 2
 # Unit 14 - Assignment 2 - Part 2
+# Submission 1
+
 
 # Quick repair tool for PterodactylRun
-# Build Version 1.5.1
+# Build Version 1.7.0
 
 import os   # These 3 modules are used
 import sys  # within this file, they
@@ -38,11 +40,14 @@ class IR:
             IR.menu()
 
     def install():
-        print("\n Consult the README.md file for minimum required module versions\n if installing modules does not fix module requirement issue\n")
+        print("\n Consult the README.md file for minimum required module versions\n if installing modules does not fix module requirement issue")
+        
+        print("\n If this this doesnt install modules the ways you can try manually\n install them with one of these commands:\n    [1] pip install MODULE_NAME\n    [2] py -m pip install MODULE_NAME\n    [3] pip3 install MODULE_NAME\n")
+        
         time.sleep(3)
         for i in moduleList:
             os.system(f"pip install {i}")
-        print("\n All required modules should be installed\n    Run 'py PterodactylRun.py'")
+        print("\n All required modules should be installed\n    Run 'py PterodactylRun.pyw'")
 
     def repair():
         import requests
