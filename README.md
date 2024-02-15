@@ -1,6 +1,6 @@
 # PterodactylRun
 College Assignment Work for a Games Development Unit
-[.GIF OF GAMEPLAY]
+![image](https://github.com/Kieferrrrr/PterodactylRun/assets/157843487/6071f503-1fb0-47d9-8b9b-3987ddb0ef93)
 
 # Description - Build Version 1.7.0
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
