@@ -25,6 +25,9 @@ urlDict = {
     "json": "https://raw.githubusercontent.com/Kieferrrrr/PterodactylRun/main/resources/etc/scores.json"
 }
 
+ptDir = f"{os.path.dirname(os.path.realpath(__file__))}/"
+ptDir = ptDir.replace("\\", "/")
+
 class IR:
     def menu():
         print(" [1] Install Modules")
@@ -51,17 +54,17 @@ class IR:
 
     def repair():
         import requests
-        print("\n  [1] Repair config.ini")
+        print("\n [1] Repair config.ini")
         print(" [2] Repair score.json\n")
         rChoice = int(input(" >> "))
         if rChoice == 1:
             iniContent = requests.get(urlDict["ini"])
             try:
-                os.remove("resources/etc/config.ini")
+                os.remove(f"{ptDir}resources/etc/config.ini")
             except:
                 pass
-            iniFile = open("resources/etc/config.ini")
-            iniFile.write(iniContent.text())
+            iniFile = open(f"{ptDir}resources/etc/config.ini", "w+")
+            iniFile.write(iniContent.text)
             iniFile.close()
             print("\n Rebuilt conifg.ini File")
             time.sleep(2)
@@ -69,11 +72,11 @@ class IR:
         elif rChoice == 2:
             jsonContent = requests.get(urlDict["json"])
             try:
-                os.remove("resources/etc/scores.json")
+                os.remove(f"{ptDir}resources/etc/scores.json")
             except:
                 pass
-            jsonFile = open("resources/etc/scores.json")
-            jsonFile.write(jsonContent.text())
+            jsonFile = open(f"{ptDir}resources/etc/scores.json", "w+")
+            jsonFile.write(jsonContent.text)
             jsonFile.close()
             print("\n Rebuilt scores.json File")
             time.sleep(2)
