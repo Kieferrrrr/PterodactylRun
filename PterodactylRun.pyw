@@ -12,11 +12,15 @@ import os
 import sys
 import json
 import random
-import pygame # Needs installing
-import configparser # Needs installing
 
 from time import sleep
 from datetime import datetime
+
+try:
+    import pygame
+    import configparser
+except:
+    print(" Required modules are not installed\n     run install-repair.py")
 
 # Dictionary of basic/common errors
 errs = {
