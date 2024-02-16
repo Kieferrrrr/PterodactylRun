@@ -31,7 +31,7 @@ errs = {
 
 if sys.platform == "win32": # Windows
     cl = "cls"
-    os.system("mode 80,20 && title PterodactlyRun - Version 1.7.0 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
+    os.system("title PterodactlyRun - Version 1.7.0 - CLI") # .pyw should hide the terminal but if its ran in the CLI its there
     detOS = "Windows"
 elif sys.platform == "linux" or sys.platform == "linux2": # Linux
     cl = "clear"
