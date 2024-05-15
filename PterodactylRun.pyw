@@ -51,8 +51,10 @@ else:
 vw = 700 # Screen view width
 vh = 350 # Screen view height
 
+firstRun = True # main.play() cant see this
+
 white = "\x1b[38;5;254m" # Text
-grey = "\x1b[38;5;245m"  # Events
+grey = "\x1b[38;5;245m"  # Events and info
 blue = "\x1b[38;5;45m"   # Variables
 amber = "\x1b[38;5;220m" # Errors
 red = "\x1b[38;5;196m"   # Fatal errors
@@ -95,7 +97,7 @@ class main:
         self.trexIco = pygame.image.load(f"{ptDir}resources/img/trexSmall.png")
         self.textBig = pygame.font.Font(f"{ptDir}resources/etc/GameOver.ttf", 75)
         self.textSmall = pygame.font.Font(f"{ptDir}resources/etc/GameOver.ttf", 48)
-        # Integers
+        # Variables
         self.level = 1
         self.levelScore = 0
         self.score = 00000
@@ -114,6 +116,13 @@ class main:
         self.trexCTRL.mainAccess = self
 
     def play(self):
+        global firstRun
+        if firstRun == True:
+            print(f" {white}[{grey}Info{white}] FPS: {blue}{self.dataParsing.fps}")
+            print(f" {white}[{grey}Info{white}] Start speed: {blue}{self.scrollSpeed}")
+            print(f" {white}[{grey}Info{white}] Saving scores: {blue}{self.dataParsing.saveHigh}")
+            print(f" {white}[{grey}Info{white}] Score directory: {blue}{self.dataParsing.saveDir}{white}\n")
+            firstRun = False
         self.running = True
         while self.running:
             for event in pygame.event.get():
@@ -224,7 +233,8 @@ class dataHandler:
                 # General configurations for the game
                 self.startSpeed = conf["CONFIG"]["startSpeed"]
                 self.fps = conf["CONFIG"]["fps"]
-                self.saveHigh = bool(conf["CONFIG"]["saveHigh"])
+                self.saveHigh = int(conf["CONFIG"]["saveHigh"])
+                self.saveHigh = bool(self.saveHigh) # int to bool conversion to change 1 to True and 0 to False
                 self.saveDir = conf["CONFIG"]["saveDir"]
             except configparser.Error:
                 throwErr(errs[6], fatal=False)
@@ -364,6 +374,7 @@ class cactus:
             print(f" {white}[{grey}Event{white}] Cactus spawned at {blue}{self.x}{white}")
         elif self.alive == True:
             self.x = self.x - self.mainAccess.scrollSpeed
+            self.xUpdate(store=self.mainAccess.cStore)
             if self.avoided == False:
                 if self.mainAccess.player.rect.y >= 100 and self.x in range(vw // 4 - 56, vw // 4 + 56):
                     print(f" {white}[{grey}Event{white}] You crashed into a cactus")
@@ -390,12 +401,16 @@ class cactus:
                 x = random.randint(700, 1400)
                 tooClose = False
                 for stored in store:
-                    if abs(x - stored) < 56:
+                    #if abs(x - stored) < 56:
+                    if x in range(stored - 70, stored + 150):
                         tooClose = True
-                        print(f" {white}[{grey}Event{white}] Tried to spawn cactus to close to previous cacti")
                         break
                 if not tooClose:
                     return x
+    
+    def xUpdate(self, store: list[int]):
+        store.pop(0)
+        store.append(self.x)
         
 
 if __name__ == "__main__":
