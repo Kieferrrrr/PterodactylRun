@@ -325,6 +325,11 @@ class trex:
                 elif self.img == self.imgB:
                     self.img = self.imgA
                 self.stepTimer = datetime.now().timestamp()
+            if self.mainAccess.player.rect.y >= 90 and self.x in range(160, 230):
+                print(f" {white}[{grey}Event{white}] You killed a T-Rex")
+                self.alive = False
+                self.mainAccess.kills = self.mainAccess.kills + 1
+                self.mainAccess.score = self.mainAccess.score + 5
             if self.x <= -730:
                 self.alive = False
             if self.killed == True:
