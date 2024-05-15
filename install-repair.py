@@ -7,7 +7,7 @@
 
 
 # Quick repair tool for PterodactylRun
-# Build Version 1.7.0
+# Build Version 2.0.0
 
 import os   # These 3 modules are used
 import sys  # within this file, they
@@ -17,6 +17,7 @@ import time # should come with Python 3
 moduleList = [
     "pygame==2.5.2", # Python game engine 
     "requests==2.31.0", # Used to rebuild utility files 
+    "colorama==0.4.6", # Used to force ANSI colours to work on windows CMD
     "configparser==6.0.0" # Used to retrieve values in resoruces/etc/config.ini
 ]
 

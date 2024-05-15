@@ -1,13 +1,11 @@
 # PterodactylRun
 College Assignment Work for a Games Development Unit
-![image](https://github.com/Kieferrrrr/PterodactylRun/assets/157843487/6071f503-1fb0-47d9-8b9b-3987ddb0ef93)
+[GIF of gameplay]
 
-# Description - Build Version 1.7.0
+# Description - Build Version 2.0.0
 PterodactylRun is a blend of FlappyBird and the Chromium Dino Game, the aim of PterodactylRun is to keep the pterodactyl away from the
-ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 1.7.0 is the best fully working build with 
-neat-ish code which i submitted for the college assignment first submission. During the resubmission period of the assignment a 
-version 2 will be made to fix and rework errors and bad python practices (becuase theres a few). Version 2 will improve the code,
-reduce/remove bugs and include new features. However, 1.7.0 is playable enough to get the idea of the games concept and functionality.
+ground and the hazards that lay on it whilst looking out for T-Rexes to collect. Version 2.0.0 is the final production version of PterodactylRun
+which follows version 1.7.0 which was the first submission for the assignemnet. Version 2.0.0 features better code practices and improved functionality along with bug fixes.
 
 ## How To Play
 PterodactylRun is very simple to play, tap or hold the space bar to make the pterodactyl fly over cacti and stay off the ground.
@@ -18,12 +16,12 @@ avoid is worth 1 point. Each time you go over 50 points you progress to the next
 ```shell
 git clone https://github.com/Kieferrrrr/PterodactylRun
 cd PterodactylRun
-py install-repair.py
+python install-repair.py
 ```
 
 ### Running
 ```shell
-py PterodactylRun.pyw
+python PterodactylRun.pyw
 ```
 
 ## install-repair.py
@@ -45,6 +43,9 @@ Python >= 3.7
 
 ### Configparser 6.0.0
 Python >= 3.8
+
+### Colorama 0.4.6
+Python >= 3.0
 
 
 ## Licensing and Chromium Information
